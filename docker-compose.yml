@@ -1,0 +1,55 @@
+version: "3.8"
+services:
+    bot:
+        build:
+            context: .
+            dockerfile: Dockerfile
+        container_name: "test-stats-bot"
+        restart: always
+        environment:  # см. файл .env (в репозитории - .env_dist)
+            - BOT_TOKEN=${BOT_TOKEN}
+            - STATS_DB=${DB}
+            - STATS_HOST=${DB_HOST}
+            - STATS_USER=${DB_USER}
+            - STATS_PASS=${DB_PASS}
+        depends_on:
+            - grafana
+            - influxdb
+
+    influxdb:
+        image: influxdb:1.8-alpine
+        container_name: "test-stats-influxdb"
+        restart: always
+        volumes:
+            - "influxdb:/var/lib/influxdb"
+        environment:  # см. файл .env (в репозитории - .env_dist)
+            - INFLUXDB_DB=${DB}
+            - INFLUXDB_ADMIN_USER=${DB_ADMIN_USER}  # Этот юзер нужен для создания базы
+            - INFLUXDB_ADMIN_USER_PASSWORD=${DB_ADMIN_PASS}
+            - INFLUXDB_USER=${DB_USER}  # Этот юзер для записи в БД и чтения со стороны Grafana
+            - INFLUXDB_USER_PASSWORD=${DB_PASS}
+            - INFLUXDB_HTTP_AUTH_ENABLED=true
+
+    grafana:
+        image: grafana/grafana:7.3.4
+        container_name: "test-stats-grafana"
+        volumes:
+            - "grafana-data:/var/lib/grafana"
+        environment:
+            - GF_DATE_FORMATS_DEFAULT_TIMEZONE=browser
+        ports:
+            - "3000:3000"
+
+volumes:
+    influxdb:
+        driver: local
+        driver_opts:
+            type: 'none'
+            o: 'bind'
+            device: './influxdb'
+    grafana-data:
+        driver: local
+        driver_opts:
+            type: 'none'
+            o: 'bind'
+            device: './grafana-data'

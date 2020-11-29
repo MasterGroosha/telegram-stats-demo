@@ -1,0 +1,5 @@
+.idea/
+/.env
+/venv/
+grafana-data/
+influxdb/
