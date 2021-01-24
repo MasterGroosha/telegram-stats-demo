@@ -24,9 +24,8 @@ class ThrottleMiddleware(BaseMiddleware):
     async def on_process_message(self, message: types.Message, data: dict):
         if not cache.get(message.chat.id):  # Предполагается, что бот НЕ работает в группах
             cache[message.chat.id] = True  # Записи в кэше нет, создаём
-            return
-        else:  # Пропускаем обработку
-            raise CancelHandler
+            return  
+        raise CancelHandler # Пропускаем обработку
 
 
 dp.middleware.setup(ThrottleMiddleware())
