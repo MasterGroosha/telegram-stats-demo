@@ -22,7 +22,7 @@ class EventCommand(Enum):
 async def log(user_id: int, event: EventCommand):
     data = {
         "measurement": "bot_commands",
-        "time": datetime.now(),
+        "time": datetime.utcnow(),
         "fields": {"event": 1},
         "tags": {
             "user": str(user_id),
