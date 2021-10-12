@@ -3,3 +3,4 @@
 /venv/
 grafana-data/
 influxdb/
+docker-compose.yml
