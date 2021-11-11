@@ -7,11 +7,8 @@ from aiogram.dispatcher.router import Router
 from bot.analytics.client import AnalyticsClient
 from bot.config_reader import Config, load_config
 from bot.handlers.commands import register_commands
-# from bot.handlers.forwarded_messages import register_forwards
-# from bot.handlers.add_or_migrate import register_add_or_migrate
-# from bot.handlers.inline_mode import register_inline
-# from bot.handlers.errors import register_errors
-# from bot.ui_commands import set_bot_commands
+from bot.middlewares.log_updates import LogUpdatesMiddleware
+from bot.ui_commands import set_ui_commands
 
 logger = logging.getLogger(__name__)
 
@@ -29,19 +26,18 @@ async def main():
     # Создаём единственный роутер
     default_router = Router()
 
+    # Подключаем мидлварь логирования
+    default_router.message.outer_middleware(LogUpdatesMiddleware())
+
     # Регистрация хэндлеров
     register_commands(default_router)
-    # register_forwards(default_router)
-    # register_add_or_migrate(default_router)
-    # register_inline(default_router)
-    # register_errors(default_router)
 
     # Создаём диспетчер и подключаем к нему наш единственный роутер
     dp = Dispatcher()
     dp.include_router(default_router)
 
-    # Set bot commands in UI
-    # await set_bot_commands(bot)
+    # Установка команд в интерфейсе
+    await set_ui_commands(bot)
 
     # Запускаем бота
     await dp.start_polling(bot, influx=influx)

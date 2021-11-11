@@ -10,7 +10,7 @@ async def cmd_start(message: types.Message, influx: AnalyticsClient):
     :param influx: класс для работы с InfluxDB
     """
     await message.answer("Обработчик команды <code>/start</code>")
-    await influx.log("/start", message.date)
+    await influx.log_message("/start", message)
 
 
 async def cmd_help(message: types.Message, influx: AnalyticsClient):
@@ -20,7 +20,7 @@ async def cmd_help(message: types.Message, influx: AnalyticsClient):
     :param influx: класс для работы с InfluxDB
     """
     await message.answer("Обработчик команды <code>/help</code>")
-    await influx.log("/help", message.date)
+    await influx.log_message("/help", message)
 
 
 def register_commands(router: Router):
