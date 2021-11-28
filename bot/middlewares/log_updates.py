@@ -1,11 +1,12 @@
 import datetime
+from queue import Queue
 from typing import Any, Awaitable, Callable, Dict
 
-from aiogram.types import TelegramObject, Message, CallbackQuery
-from aiogram.dispatcher.event.bases import UNHANDLED
 from aiogram import BaseMiddleware
+from aiogram.dispatcher.event.bases import UNHANDLED
+from aiogram.types import TelegramObject, Message, CallbackQuery
 
-from bot.analytics.client import AnalyticsClient
+from bot.analytics import RawUpdatePre
 
 
 class LogUpdatesMiddleware(BaseMiddleware):
@@ -18,7 +19,7 @@ class LogUpdatesMiddleware(BaseMiddleware):
         event: TelegramObject,
         data: Dict[str, Any],
     ) -> Any:
-        influx_client: AnalyticsClient = data.get("influx")
+        objects_queue: Queue = data.get("objects_queue")
 
         # Выполнение хэндлера
         result = await handler(event, data)
@@ -31,7 +32,7 @@ class LogUpdatesMiddleware(BaseMiddleware):
             event_datetime = event.message.date
 
         # Логирование
-        await influx_client.log_update(int(result is not UNHANDLED), event_datetime)
+        objects_queue.put(RawUpdatePre(is_handled=result is not UNHANDLED))
 
         # Необходимо вернуть результат выполнения хэндлера, иначе будет ошибка
         return result

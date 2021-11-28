@@ -10,9 +10,8 @@ class TgBot:
 @dataclass
 class InfluxDB:
     host: str
-    db: str
-    user: str
-    password: str
+    org: str
+    token: str
 
 
 @dataclass
@@ -27,9 +26,8 @@ def load_config():
             token=getenv("BOT_TOKEN"),
         ),
         influxdb=InfluxDB(
-            host=getenv("DB_HOST"),
-            db=getenv("INFLUXDB_DB"),
-            user=getenv("INFLUXDB_WRITE_USER"),
-            password=getenv("INFLUXDB_WRITE_USER_PASSWORD"),
+            host=getenv("INFLUXDB_HOST"),
+            org=getenv("INFLUXDB_ORG"),
+            token=getenv("INFLUXDB_TOKEN"),
         )
     )

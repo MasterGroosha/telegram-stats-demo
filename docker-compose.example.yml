@@ -5,8 +5,7 @@ services:
             context: .
             dockerfile: Dockerfile
         stop_signal: SIGINT
-        # Замените на "always" или "on-failure", чтобы контейнер автоматически пересоздавался
-        restart: "no"
+        restart: "always"
         env_file:
             - .env
         depends_on:
@@ -14,25 +13,11 @@ services:
             - influxdb
 
     influxdb:
-        image: influxdb:1.8-alpine
-        # Необходимо в первый раз задать контейнеру имя, чтобы проще было подключаться из терминала
-        # Далее можно убрать следующую строку
-        container_name: "first-influxdb"
-        # Замените на "always" или "on-failure", чтобы контейнер автоматически пересоздавался
-        restart: "no"
+        image: influxdb:2.1-alpine
+        restart: "always"
         volumes:
-            - "/path/to/your/influxdb_data:/var/lib/influxdb"
+            - "/path/to/your/influxdb_data:/var/lib/influxdb2"
+        ports:
+            - "8086:8086"
         env_file:
             - .env
-
-    grafana:
-        image: grafana/grafana:8.2.1
-        # Замените на "always" или "on-failure", чтобы контейнер автоматически пересоздавался
-        restart: "no"
-        volumes:
-            - "/path/to/your/grafana_data:/var/lib/grafana"
-        environment:
-            - GF_DATE_FORMATS_DEFAULT_TIMEZONE=browser
-        # Если нужно на хосте просматривать данные или прокинуть наружу
-        ports:
-            - "3000:3000"
